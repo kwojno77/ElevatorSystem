@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { ElevatorService } from './services/elevator.service';
 import { Elevator } from './interfaces/elevator.interface'
 
@@ -7,6 +6,10 @@ import { Elevator } from './interfaces/elevator.interface'
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { Nullish } from './types/nullish';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,17 +32,21 @@ const analytics = getAnalytics(app);
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [MatButtonModule, MatTableModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   constructor(private elevatorService: ElevatorService) {}
 
+  displayedColumns: string[] = ['id', 'currentFloor', 'destinationFloors', 'direction'];
+
   title = 'elevator-system';
   elevator: Nullish<Elevator> = null;
+  elevators: Array<Elevator> = [];
 
   ngOnInit() {
     this.elevator = this.elevatorService.status(1);
+    this.elevators = this.elevatorService.getElevators();
   }
 }

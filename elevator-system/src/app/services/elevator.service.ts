@@ -7,7 +7,14 @@ import { ElevatorDirection } from '../types/elevator-direction';
   providedIn: 'root'
 })
 export class ElevatorService {
-  elevators: Array<Elevator> = [{ id: 1, currentFloor: 0, destinationFloors: [5], direction: 'down'}];
+  elevators: Array<Elevator> = [
+    { id: 1, currentFloor: 0, destinationFloors: [5], direction: 'down'},
+    { id: 2, currentFloor: 5, destinationFloors: [], direction: null},
+    { id: 3, currentFloor: 4, destinationFloors: [], direction: null},
+    { id: 4, currentFloor: 21, destinationFloors: [24, 26, 28, 30], direction: 'up'},
+    { id: 5, currentFloor: 17, destinationFloors: [20], direction: 'up'},
+    { id: 6, currentFloor: 3, destinationFloors: [1], direction: 'down'},
+  ];
 
   waitingCallers: Array<{callerCurrentFloor: number, callerDestinationFloor: number}> = [];
 
@@ -17,6 +24,10 @@ export class ElevatorService {
     const elevator = this.elevators.find((e: Elevator) => e.id === id);
 
     return elevator ?? null;
+  }
+
+  getElevators(): Array<Elevator> {
+    return this.elevators;
   }
 
   step() {
