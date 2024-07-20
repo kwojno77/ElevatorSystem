@@ -1,13 +1,21 @@
 <main class="main">
   <div class="content">
     <div class="form-container">
-      <button mat-button (click)="performStep()">Submit</button>
+      <div class="frame mat-elevation-z2 flex-grow-1" id="perform-step-button-wrapper">
+        <button mat-raised-button (click)="performStep()">Step</button>
+      </div>
 
-      <app-pickup-form (pickupEvent)="pickupElevator($event)"></app-pickup-form>
+      <div class="frame mat-elevation-z2 flex-grow-2">
+        <app-pickup-form (pickupEvent)="pickupElevator($event)"></app-pickup-form>
+      </div>
 
-      <app-update-form (updatedElevator)="updateElevator($event)"></app-update-form>
+      <div class="frame mat-elevation-z2 flex-grow-2">
+        <app-update-form (updatedElevator)="updateElevator($event)"></app-update-form>
+      </div>
 
-      <app-status-form (selectedElevatorId)="showStatus($event)"></app-status-form>
+      <div class="frame mat-elevation-z2 flex-grow-1">
+        <app-status-form (selectedElevatorId)="showStatus($event)"></app-status-form>
+      </div>
     </div>
 
     <table mat-table [dataSource]="elevators" class="mat-elevation-z8">

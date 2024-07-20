@@ -1,17 +1,18 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { MatButton } from '@angular/material/button';
-import { MatInput } from '@angular/material/input';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ElevatorDirection } from '../../types/elevator-direction';
 import { Elevator } from '../../interfaces/elevator.interface';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-update-form',
   standalone: true,
   imports: [
-    MatButton,
-    MatInput,
-    ReactiveFormsModule
+    MatButtonModule,
+    MatInputModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './update-form.component.html',
   styleUrl: './update-form.component.css'
@@ -19,19 +20,23 @@ import { Elevator } from '../../interfaces/elevator.interface';
 export class UpdateFormComponent {
   @Output() updatedElevator = new EventEmitter<Elevator>();
 
-  elevatorIdFormControl = new FormControl(null, [Validators.required]);
-  currentFloorFormControl = new FormControl(null, [Validators.required]);
-  destinationFloorsFormControl = new FormControl(null, [Validators.required]);
+  elevatorIdFormControl = new FormControl(null, []);
+  currentFloorFormControl = new FormControl(null, []);
+  destinationFloorsFormControl = new FormControl(null, []);
+
+  constructor(private snackBar: MatSnackBar) {}
 
   submit() {
     const currentFloor = parseControlToNumber(this.currentFloorFormControl);
-    const destinationFloors = parseControlToArrayOfNumbers(this.destinationFloorsFormControl);
+    let destinationFloors = parseControlToArrayOfNumbers(this.destinationFloorsFormControl);
     const id = this.elevatorIdFormControl.value;
 
     if (!currentFloor && currentFloor !== 0) {
+      this.snackBar.open('"current floor" field is empty', 'X');
       return;
     }
     if (!id) {
+      this.snackBar.open('"elevator id" field is empty', 'X');
       return;
     }
 
@@ -40,15 +45,23 @@ export class UpdateFormComponent {
       direction = null;
     } else if (destinationFloors[0] > currentFloor) {
       direction = 'up';
-      if (destinationFloors.some((destFloor) => destFloor <= currentFloor)) {
+      if (destinationFloors.some((destFloor) => destFloor < currentFloor)) {
+        this.snackBar.open('One of the destination floors is below the elevator', 'X');
         return;
       }
     } else {
       direction = 'down';
-      if (destinationFloors.some((destFloor) => destFloor >= currentFloor)) {
+      if (destinationFloors.some((destFloor) => destFloor > currentFloor)) {
+        this.snackBar.open('One of the destination floors is above the elevator', 'X');
         return;
       }
     }
+
+    destinationFloors = destinationFloors.filter((destFloor) => destFloor !== currentFloor);
+
+    this.currentFloorFormControl.setValue(null);
+    this.destinationFloorsFormControl.setValue(null);
+    this.elevatorIdFormControl.setValue(null);
 
     this.updatedElevator.emit({ id, currentFloor, destinationFloors, direction });
   }

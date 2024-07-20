@@ -77,6 +77,7 @@ export class AppComponent {
 
   updateElevator(updatedElevator: Elevator) {
     this.elevatorService.update(updatedElevator);
+    this.selectedId = updatedElevator.id;
     this.elevators = this.elevatorService.getElevators();
   }
 }

@@ -1,3 +1,8 @@
-<input matInput type="number" [formControl]="elevatorIdFormControl" placeholder="elevator id">
+<button mat-raised-button (click)="submit()">Status</button>
 
-<button mat-button (click)="submit()">Submit</button>
+<div class="form-row">
+  <mat-form-field>
+    <mat-label>elevator id</mat-label>
+    <input matInput type="number" [formControl]="elevatorIdFormControl">
+  </mat-form-field>
+</div>

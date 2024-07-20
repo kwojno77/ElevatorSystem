@@ -7,14 +7,35 @@
 .form-container {
   display: flex;
   flex-direction: row;
-  gap: 2em;
+  gap: 1em;
   width: 100%;
-}
-
-.header-row {
-  background-color: #6D98BA;
 }
 
 .selected {
   background-color: #9AADBF;
+}
+
+.frame {
+  border-radius: 2em;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-grow-2 {
+  flex-grow: 2;
+}
+
+app-status-form, app-pickup-form, app-update-form, #perform-step-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  align-items: flex-end;
+  padding: 1em;
+}
+
+table{
+  border-radius: 1em;
+  overflow:hidden !important;
 }
