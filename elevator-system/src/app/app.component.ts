@@ -5,10 +5,14 @@ import { Elevator } from './interfaces/elevator.interface'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { Nullish } from './types/nullish';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { StatusFormComponent } from './components/status-form/status-form.component';
+import { PickupFormComponent } from './components/pickup-form/pickup-form.component';
+import { PickupEvent } from './interfaces/pickup-event.interface';
+import { UpdateFormComponent } from './components/update-form/update-form.component';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -32,7 +36,7 @@ const analytics = getAnalytics(app);
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [MatButtonModule, MatTableModule],
+  imports: [MatButtonModule, MatTableModule, MatInputModule, StatusFormComponent, PickupFormComponent, UpdateFormComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -42,11 +46,37 @@ export class AppComponent {
   displayedColumns: string[] = ['id', 'currentFloor', 'destinationFloors', 'direction'];
 
   title = 'elevator-system';
-  elevator: Nullish<Elevator> = null;
   elevators: Array<Elevator> = [];
 
+  selectedId?: number;
+
   ngOnInit() {
-    this.elevator = this.elevatorService.status(1);
+    this.elevators = this.elevatorService.getElevators();
+  }
+
+  select(id: number) {
+    this.selectedId = id;
+  }
+
+  performStep() {
+    this.elevators = this.elevatorService.step();
+  }
+
+  showStatus(id: number) {
+    this.selectedId = id;
+  }
+
+  pickupElevator(pickupEvent: PickupEvent) {
+
+    console.debug('pickupEvent', pickupEvent);
+    console.debug('this.elevators bef', this.elevators);
+    // TODO debug why this is not working
+    this.elevators = this.elevatorService.pickup(pickupEvent.currentFloor, pickupEvent.destinationFloor);
+    console.debug('this.elevators aft', this.elevators);
+  }
+
+  updateElevator(updatedElevator: Elevator) {
+    this.elevatorService.update(updatedElevator);
     this.elevators = this.elevatorService.getElevators();
   }
 }

@@ -8,12 +8,22 @@ import { ElevatorDirection } from '../types/elevator-direction';
 })
 export class ElevatorService {
   elevators: Array<Elevator> = [
-    { id: 1, currentFloor: 0, destinationFloors: [5], direction: 'down'},
+    { id: 1, currentFloor: 0, destinationFloors: [5], direction: 'up'},
     { id: 2, currentFloor: 5, destinationFloors: [], direction: null},
     { id: 3, currentFloor: 4, destinationFloors: [], direction: null},
     { id: 4, currentFloor: 21, destinationFloors: [24, 26, 28, 30], direction: 'up'},
     { id: 5, currentFloor: 17, destinationFloors: [20], direction: 'up'},
     { id: 6, currentFloor: 3, destinationFloors: [1], direction: 'down'},
+    { id: 7, currentFloor: 0, destinationFloors: [5], direction: 'up'},
+    { id: 8, currentFloor: 5, destinationFloors: [], direction: null},
+    { id: 9, currentFloor: 4, destinationFloors: [], direction: null},
+    { id: 10, currentFloor: 21, destinationFloors: [24, 26, 28, 30], direction: 'up'},
+    { id: 11, currentFloor: 17, destinationFloors: [20], direction: 'up'},
+    { id: 12, currentFloor: 3, destinationFloors: [1], direction: 'down'},
+    { id: 13, currentFloor: 4, destinationFloors: [], direction: null},
+    { id: 14, currentFloor: 21, destinationFloors: [24, 26, 28, 30], direction: 'up'},
+    { id: 15, currentFloor: 17, destinationFloors: [20], direction: 'up'},
+    { id: 16, currentFloor: 3, destinationFloors: [1], direction: 'down'},
   ];
 
   waitingCallers: Array<{callerCurrentFloor: number, callerDestinationFloor: number}> = [];
@@ -23,15 +33,16 @@ export class ElevatorService {
   status(id: number): Nullish<Elevator> {
     const elevator = this.elevators.find((e: Elevator) => e.id === id);
 
+    // mark selected
     return elevator ?? null;
   }
 
   getElevators(): Array<Elevator> {
-    return this.elevators;
+    return [...this.elevators];
   }
 
-  step() {
-    this.elevators = [...this.elevators].map(elevator => {
+  step(): Elevator[] {
+    this.elevators = this.getElevators().map(elevator => {
       const updatedCurrentFloor = elevator.direction === 'up'
         ? elevator.currentFloor + 1
         : elevator.direction === 'down'
@@ -51,10 +62,11 @@ export class ElevatorService {
       // TODO update waiting list
       return updatedElevator;
     });
+    return this.elevators;
   }
 
-  pickup(callerCurrentFloor: number, callerDestinationFloor: number) {
-    if (callerCurrentFloor === callerDestinationFloor) { return }
+  pickup(callerCurrentFloor: number, callerDestinationFloor: number): Array<Elevator> {
+    if (callerCurrentFloor === callerDestinationFloor) { return this.getElevators() }
 
     const callerDirection: ElevatorDirection = callerCurrentFloor > callerDestinationFloor ? 'down' : 'up';
 
@@ -74,14 +86,16 @@ export class ElevatorService {
       }, null);
 
     if (nearestElevator) {
+      nearestElevator.direction = callerDirection;
       nearestElevator.destinationFloors.push(callerCurrentFloor, callerDestinationFloor);
       this.update(nearestElevator);
     } else {
       this.waitingCallers.push({callerCurrentFloor, callerDestinationFloor});
     }
+    return this.getElevators();
   }
 
   update(updatedElevator: Elevator) {
-    this.elevators = [...this.elevators].map(elevator => elevator.id === updatedElevator.id ? updatedElevator : elevator);
+    this.elevators = this.getElevators().map(elevator => elevator.id === updatedElevator.id ? updatedElevator : elevator);
   }
 }
