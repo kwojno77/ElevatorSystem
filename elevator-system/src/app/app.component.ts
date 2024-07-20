@@ -43,7 +43,7 @@ const analytics = getAnalytics(app);
 export class AppComponent {
   constructor(private elevatorService: ElevatorService) {}
 
-  displayedColumns: string[] = ['id', 'currentFloor', 'destinationFloors', 'direction'];
+  displayedColumns: string[] = ['id', 'currentFloor', 'destinationFloors', 'priorityFloor', 'direction'];
 
   title = 'elevator-system';
   elevators: Array<Elevator> = [];
@@ -67,12 +67,12 @@ export class AppComponent {
   }
 
   pickupElevator(pickupEvent: PickupEvent) {
+    const updatedElevator = this.elevatorService.pickup(pickupEvent.currentFloor, pickupEvent.destinationFloor);
 
-    console.debug('pickupEvent', pickupEvent);
-    console.debug('this.elevators bef', this.elevators);
-    // TODO debug why this is not working
-    this.elevators = this.elevatorService.pickup(pickupEvent.currentFloor, pickupEvent.destinationFloor);
-    console.debug('this.elevators aft', this.elevators);
+    if (updatedElevator) {
+      this.selectedId = updatedElevator.id;
+      this.elevators = this.elevatorService.getElevators();
+    }
   }
 
   updateElevator(updatedElevator: Elevator) {

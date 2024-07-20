@@ -4,11 +4,11 @@
   gap: 2em;
 }
 
-.button-container {
+.form-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 2em;
-  width: 4em;
+  width: 100%;
 }
 
 .header-row {

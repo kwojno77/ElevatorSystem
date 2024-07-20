@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { PickupEvent } from '../../interfaces/pickup-event.interface';
-import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatButton} from "@angular/material/button";
-import {MatInput} from "@angular/material/input";
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-pickup-form',
@@ -31,7 +31,9 @@ export class PickupFormComponent {
     if (!destinationFloor && destinationFloor !== 0) {
       return;
     }
-    // TODO Not working for 1 and 0
+    if (currentFloor === destinationFloor) {
+      return;
+    }
     this.pickupEvent.emit({ currentFloor, destinationFloor });
   }
 }

@@ -24,8 +24,8 @@ export class UpdateFormComponent {
   destinationFloorsFormControl = new FormControl(null, [Validators.required]);
 
   submit() {
-    const currentFloor = this.currentFloorFormControl.value;
-    const destinationFloors: Array<number> = (this.destinationFloorsFormControl.value ?? '').trim().split(',').map(v => Number(v.trim()));
+    const currentFloor = parseControlToNumber(this.currentFloorFormControl);
+    const destinationFloors = parseControlToArrayOfNumbers(this.destinationFloorsFormControl);
     const id = this.elevatorIdFormControl.value;
 
     if (!currentFloor && currentFloor !== 0) {
@@ -52,4 +52,19 @@ export class UpdateFormComponent {
 
     this.updatedElevator.emit({ id, currentFloor, destinationFloors, direction });
   }
+}
+
+function parseControlToNumber(formControl: FormControl): number | null {
+  if (!formControl.value) {
+    return null;
+  }
+  return Number(formControl.value);
+}
+
+function parseControlToArrayOfNumbers(formControl: FormControl): Array<number> {
+  if (!formControl.value) {
+    return [];
+  }
+
+  return formControl.value.split(',').map((v: string) => Number(v)).filter((v: number) => !isNaN(v));
 }

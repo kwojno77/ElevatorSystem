@@ -1,9 +1,6 @@
 <main class="main">
   <div class="content">
-    <!-- Tu będą 4 zakładki -->
-
-    <!-- API -->
-    <div class="button-container">
+    <div class="form-container">
       <button mat-button (click)="performStep()">Submit</button>
 
       <app-pickup-form (pickupEvent)="pickupElevator($event)"></app-pickup-form>
@@ -27,6 +24,11 @@
       <ng-container matColumnDef="destinationFloors">
         <th mat-header-cell *matHeaderCellDef> Destination floors </th>
         <td mat-cell *matCellDef="let element"> {{ element.destinationFloors.length > 0 ? element.destinationFloors.join(', ') : '-' }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="priorityFloor">
+        <th mat-header-cell *matHeaderCellDef> Priority floor </th>
+        <td mat-cell *matCellDef="let element"> {{ element.priorityFloor ?? '-' }} </td>
       </ng-container>
 
       <ng-container matColumnDef="direction">

@@ -1,7 +1,7 @@
-<input matInput type="number" [formControl]="elevatorIdFormControl">
+<input matInput type="number" [formControl]="elevatorIdFormControl" placeholder="elevator id">
 
-<input matInput type="number" [formControl]="currentFloorFormControl">
+<input matInput type="number" [formControl]="currentFloorFormControl" placeholder="current floor">
 
-<input matInput type="number" [formControl]="destinationFloorsFormControl">
+<input matInput type="text" [formControl]="destinationFloorsFormControl" placeholder="destination floor separated by comma">
 
 <button mat-button (click)="submit()">Submit</button>
