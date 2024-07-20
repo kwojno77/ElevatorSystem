@@ -34,7 +34,7 @@ export class ElevatorService {
     return [...this.elevators];
   }
 
-  step(): Elevator[] {
+  step() {
     this.elevators = this.getElevators().map(elevator => {
       const updatedCurrentFloor = elevator.direction === 'up'
         ? elevator.currentFloor + 1
@@ -64,7 +64,6 @@ export class ElevatorService {
       // TODO update waiting list
       return updatedElevator;
     });
-    return this.elevators;
   }
 
   pickup(callerCurrentFloor: number, callerDestinationFloor: number): Nullish<Elevator> {

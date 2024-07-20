@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ElevatorService } from './services/elevator.service';
 import { Elevator } from './interfaces/elevator.interface'
 
@@ -7,12 +7,13 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { StatusFormComponent } from './components/status-form/status-form.component';
 import { PickupFormComponent } from './components/pickup-form/pickup-form.component';
 import { PickupEvent } from './interfaces/pickup-event.interface';
 import { UpdateFormComponent } from './components/update-form/update-form.component';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -36,7 +37,7 @@ const analytics = getAnalytics(app);
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [MatButtonModule, MatTableModule, MatInputModule, StatusFormComponent, PickupFormComponent, UpdateFormComponent],
+  imports: [MatButtonModule, MatTableModule, MatInputModule, StatusFormComponent, PickupFormComponent, UpdateFormComponent, MatSortModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -46,20 +47,25 @@ export class AppComponent {
   displayedColumns: string[] = ['id', 'currentFloor', 'destinationFloors', 'priorityFloor', 'direction'];
 
   title = 'elevator-system';
+  dataSource = new MatTableDataSource<Elevator>();
+
   elevators: Array<Elevator> = [];
 
   selectedId?: number;
 
+  @ViewChild(MatSort) sort = new MatSort();
+
   ngOnInit() {
-    this.elevators = this.elevatorService.getElevators();
+    this.dataSource.data = this.elevatorService.getElevators();
   }
 
-  select(id: number) {
-    this.selectedId = id;
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
   }
 
   performStep() {
-    this.elevators = this.elevatorService.step();
+    this.elevatorService.step();
+    this.dataSource.data = this.elevatorService.getElevators();
   }
 
   showStatus(id: number) {
@@ -71,13 +77,13 @@ export class AppComponent {
 
     if (updatedElevator) {
       this.selectedId = updatedElevator.id;
-      this.elevators = this.elevatorService.getElevators();
+      this.dataSource.data = this.elevatorService.getElevators();
     }
   }
 
   updateElevator(updatedElevator: Elevator) {
     this.elevatorService.update(updatedElevator);
     this.selectedId = updatedElevator.id;
-    this.elevators = this.elevatorService.getElevators();
+    this.dataSource.data = this.elevatorService.getElevators();
   }
 }
