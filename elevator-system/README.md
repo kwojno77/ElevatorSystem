@@ -1,27 +1,59 @@
 # ElevatorSystem
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.0.
+Elevator System is a web application built with Angular and Firebase,
+designed to simulate and manage the operation of multiple elevators.
 
-## Development server
+## Firebase hosting
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+The application can be accessed either locally or via the following URL:
+https://elevatorsystem-96a76.web.app/
 
-## Code scaffolding
+## Running Locally
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Prerequisites
 
-## Build
+Before running the application locally, ensure you have the following software installed:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- **Angular CLI**: version 18.x or later
+- **Node.js**: version 20.x or later
+- **npm**: version 10.x or later
 
-## Running unit tests
+### Steps
+1) Go to elevator-system directory
+2) Install the required packages by running `npm install`
+3) Start the development server with `ng serve`.
+4) Open your browser and go to `http://localhost:4200/`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Usage
 
-## Running end-to-end tests
+Upon opening the web app, you will see an administration panel at the top of the page
+and a table below. A table provides information about the current status of 16 elevators.
+The administration panel allows you to perform four actions.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Step
 
-## Further help
+The "Step" action advances the simulation by one step.
+All elevators that are currently moving up or down will change their floor by 1.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Pickup
+
+The "Pickup" action simulates a person calling an elevator from a specific floor.
+The caller provides their current floor and a destination floor.
+After action table row with called elevator's id will be highlighted.
+
+### Update
+
+The "Update" action allows you to change the position of an elevator
+and update the list of floors where the elevator will stop.
+After this action, the table row corresponding to the updated elevator's ID will be highlighted.
+
+### Status
+
+The "Status" action highlights the row of the table corresponding to the elevator with the specified ID.
+
+## GitHub actions
+
+The Elevator System is configured to perform automatic deployments to Firebase Hosting via GitHub Actions.
+This ensures that the latest changes are always deployed and accessible online.
+
+Any changes pushed to the main branch will trigger the GitHub Actions workflow and deploy the latest version of the application to Firebase Hosting.
