@@ -15,6 +15,7 @@ import { PickupEvent } from './interfaces/pickup-event.interface';
 import { UpdateFormComponent } from './components/update-form/update-form.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { firebaseConfig } from '../../firebase-config';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -31,7 +32,11 @@ const analytics = getAnalytics(app);
   standalone: true,
   imports: [MatButtonModule, MatTableModule, MatInputModule, StatusFormComponent, PickupFormComponent, UpdateFormComponent, MatSortModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  providers: [{
+    provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+    useValue: { subscriptSizing: 'dynamic' },
+  }],
 })
 export class AppComponent {
   constructor(private elevatorService: ElevatorService) {}

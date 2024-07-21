@@ -1,13 +1,14 @@
 .content {
+  padding: 0.75em;
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 0.75em;
 }
 
 .form-container {
   display: flex;
   flex-direction: row;
-  gap: 1em;
+  gap: 0.75em;
   width: 100%;
 }
 
@@ -16,7 +17,7 @@
 }
 
 .frame {
-  border-radius: 2em;
+  border-radius: 1em;
 }
 
 .flex-grow-1 {
