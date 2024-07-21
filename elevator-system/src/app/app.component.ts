@@ -49,8 +49,6 @@ export class AppComponent {
   title = 'elevator-system';
   dataSource = new MatTableDataSource<Elevator>();
 
-  elevators: Array<Elevator> = [];
-
   selectedId?: number;
 
   @ViewChild(MatSort) sort = new MatSort();

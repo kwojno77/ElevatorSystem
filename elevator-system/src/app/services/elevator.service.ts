@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Elevator } from '../interfaces/elevator.interface';
 import { Nullish } from '../types/nullish';
 import { ElevatorDirection } from '../types/elevator-direction';
+import { Caller } from '../interfaces/caller.interface';
+import { isNullOrUndef } from '../helpers/helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -26,12 +28,16 @@ export class ElevatorService {
     { id: 16, currentFloor: 3, destinationFloors: [1], direction: 'down'},
   ];
 
-  waitingCallers: Array<{callerCurrentFloor: number, callerDestinationFloor: number}> = [];
+  waitingCallers: Array<Caller> = [];
 
   constructor() {}
 
   getElevators(): Array<Elevator> {
     return [...this.elevators];
+  }
+
+  getCallers(): Array<Caller> {
+    return [...this.waitingCallers];
   }
 
   step() {
@@ -42,9 +48,9 @@ export class ElevatorService {
           ? elevator.currentFloor - 1
           : elevator.currentFloor;
 
-      const updatedDestinationFloors = elevator.destinationFloors.filter((destFloor) => destFloor !== updatedCurrentFloor);
-
       const updatedPriorityFloor = updatedCurrentFloor === elevator.priorityFloor ? null : elevator.priorityFloor;
+
+      const updatedDestinationFloors = elevator.destinationFloors.filter((destFloor) => destFloor !== updatedCurrentFloor || updatedPriorityFloor);
 
       const updatedDirection = updatedDestinationFloors.length === 0
           ? null
@@ -61,54 +67,51 @@ export class ElevatorService {
       if (updatedPriorityFloor != elevator.priorityFloor) {
         this.updateDirection(updatedElevator);
       }
-      // TODO update waiting list
       return updatedElevator;
     });
+
+    this.waitingCallers = this.getCallers().filter((caller) => !this.pickup(caller.currentFloor, caller.destinationFloor));
   }
 
-  pickup(callerCurrentFloor: number, callerDestinationFloor: number): Nullish<Elevator> {
+  pickup(callerCurrentFloor: number, callerDestinationFloor: number, alreadyWaiting?: boolean): Nullish<Elevator> {
     if (callerCurrentFloor === callerDestinationFloor) { return null }
 
     const callerDirection: ElevatorDirection = callerCurrentFloor > callerDestinationFloor ? 'down' : 'up';
 
-    console.debug('callerDirection', callerDirection);
-    const matchingElevators = this.getElevators().filter((elevator) => elevator.direction === null
-        || (callerDirection === elevator.direction
-          && ((callerDirection === 'up' && elevator.currentFloor <= callerCurrentFloor)
-            || (callerDirection === 'down' && elevator.currentFloor >= callerCurrentFloor))));
-
-    console.debug('matching', matchingElevators);
-
-    const nearestElevator = matchingElevators.reduce((previousValue: Nullish<Elevator>, currentValue: Elevator) => {
-        if (!previousValue) {
-          return currentValue;
-        }
-
-        const previousDiff = Math.abs(previousValue.currentFloor - callerCurrentFloor);
-        const currentDiff = Math.abs(currentValue.currentFloor - callerCurrentFloor);
-
-        return previousDiff < currentDiff ? previousValue : currentValue;
-      }, null);
-
-    console.debug('nearest', nearestElevator);
+    const nearestElevator = this.findNearestElevator({ currentFloor: callerCurrentFloor, destinationFloor: callerDestinationFloor });
 
     if (!nearestElevator) {
-      this.waitingCallers.push({callerCurrentFloor, callerDestinationFloor});
+      if (!alreadyWaiting) {
+        this.waitingCallers.push({
+          currentFloor: callerCurrentFloor,
+          destinationFloor: callerDestinationFloor
+        });
+      }
       return null;
     }
 
     const isNearestOnCurrentFloor = nearestElevator.currentFloor === callerCurrentFloor;
 
-    if (isNearestOnCurrentFloor) {
+    if (!nearestElevator.destinationFloors.includes(callerDestinationFloor)) {
       nearestElevator.destinationFloors.push(callerDestinationFloor);
-    } else {
+    }
+
+    if (!isNearestOnCurrentFloor) {
       if (nearestElevator.direction === null) {
         nearestElevator.priorityFloor = callerCurrentFloor;
       }
-      nearestElevator.destinationFloors.push(callerCurrentFloor, callerDestinationFloor);
+      if (!nearestElevator.destinationFloors.includes(callerCurrentFloor)) {
+        nearestElevator.destinationFloors.push(callerCurrentFloor);
+      }
     }
 
-    nearestElevator.direction = nearestElevator.currentFloor > callerCurrentFloor ? 'down' : 'up';
+    if (nearestElevator.currentFloor === callerCurrentFloor) {
+      nearestElevator.direction = callerDirection;
+    } else {
+      nearestElevator.direction = nearestElevator.currentFloor > callerCurrentFloor
+          ? 'down'
+          : 'up';
+    }
 
     this.update(nearestElevator);
 
@@ -129,5 +132,26 @@ export class ElevatorService {
       direction = 'down';
     }
     elevator.direction = direction;
+  }
+
+  private findNearestElevator(caller: Caller): Nullish<Elevator> {
+    const callerDirection: ElevatorDirection = caller.currentFloor > caller.destinationFloor ? 'down' : 'up';
+
+    const matchingElevators = this.getElevators().filter((elevator) => elevator.direction === null
+      || (callerDirection === elevator.direction
+        && ((callerDirection === 'up' && elevator.currentFloor <= caller.currentFloor)
+          || (callerDirection === 'down' && elevator.currentFloor >= caller.currentFloor)))
+        && isNullOrUndef(elevator.priorityFloor));
+
+    return matchingElevators.reduce((previousValue: Nullish<Elevator>, currentValue: Elevator) => {
+      if (!previousValue) {
+        return currentValue;
+      }
+
+      const previousDiff = Math.abs(previousValue.currentFloor - caller.currentFloor);
+      const currentDiff = Math.abs(currentValue.currentFloor - caller.currentFloor);
+
+      return previousDiff < currentDiff ? previousValue : currentValue;
+    }, null);
   }
 }

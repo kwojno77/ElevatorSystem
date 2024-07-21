@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { isNullOrUndef } from '../../helpers/helpers';
 
 @Component({
   selector: 'app-pickup-form',
@@ -28,11 +29,11 @@ export class PickupFormComponent {
     const currentFloor = this.currentFloorFormControl.value;
     const destinationFloor = this.destinationFloorFormControl.value;
 
-    if (!currentFloor && currentFloor !== 0) {
+    if (isNullOrUndef(currentFloor)) {
       this.snackBar.open('"current floor" field is empty', 'X');
       return;
     }
-    if (!destinationFloor && destinationFloor !== 0) {
+    if (isNullOrUndef(destinationFloor)) {
       this.snackBar.open('"destinationFloor floor" field is empty', 'X');
       return;
     }
