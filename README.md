@@ -1,7 +1,14 @@
 # ElevatorSystem
 
 Elevator System is a web application built with Angular and Firebase,
-designed to simulate and manage the operation of multiple elevators.
+designed to simulate and efficiently manage the operation of multiple elevators.
+
+This application features an algorithm for assigning elevators to service requests.
+The algorithm evaluates both idle elevators and those moving in the same direction as the caller,
+selecting the one with the minimum distance to the caller to ensure prompt and efficient service.
+
+If no matching elevator is available, the caller is added to a waiting list.
+After each operational step, the system reevaluates nearest elevators for the waiting callers.
 
 ## Firebase hosting
 
